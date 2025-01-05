@@ -14,13 +14,11 @@ router.post(
 		NewUserValidationMaps.email,
 		NewUserValidationMaps.firstName,
 		NewUserValidationMaps.lastName,
-		NewUserValidationMaps.isActive,
 		NewUserValidationMaps.strongPassword,
 		validationHandler,
 	],
 	async (req: Request, res: Response) => {
-		const { email, firstName, lastName, isActive, password } =
-			req.body as UserFields
+		const { email, firstName, lastName, password } = req.body as UserFields
 
 		const salt = await bcrypt.genSalt(10)
 		const hashedPassword = await bcrypt.hash(password, salt)
@@ -30,7 +28,6 @@ router.post(
 				email: email,
 				firstName: firstName,
 				lastName: lastName,
-				isActive: isActive,
 				password: hashedPassword,
 			},
 		})
@@ -44,7 +41,6 @@ router.post(
 			email: newUser.email,
 			firstName: newUser.firstName,
 			lastName: newUser.lastName,
-			isActive: newUser.isActive,
 			createdAt: newUser.createdAt,
 		})
 	}
@@ -58,12 +54,11 @@ router.put(
 		NewUserValidationMaps.email,
 		NewUserValidationMaps.firstName,
 		NewUserValidationMaps.lastName,
-		NewUserValidationMaps.isActive,
 		validationHandler,
 	],
 	async (req: Request, res: Response) => {
 		const id = parseInt(req.params.id)
-		const { email, firstName, lastName, isActive } = req.body as UserFields
+		const { email, firstName, lastName } = req.body as UserFields
 
 		const user = await prisma.user.findFirst({ where: { id: id } })
 		if (!user) {
@@ -85,7 +80,6 @@ router.put(
 			email,
 			firstName,
 			lastName,
-			isActive,
 		})
 	}
 )

@@ -28,11 +28,6 @@ const NewUserValidationMaps: UserValidationMaps & {
 	lastName: body('lastName')
 		.isString()
 		.withMessage('lastName must be a string'),
-	isActive: body('isActive')
-		.notEmpty()
-		.withMessage('isActive is required')
-		.isBoolean()
-		.withMessage('isActive must be a boolean'),
 	password: body('password')
 		.notEmpty()
 		.withMessage('Password is required')

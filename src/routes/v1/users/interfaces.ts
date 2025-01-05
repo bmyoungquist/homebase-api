@@ -3,7 +3,6 @@ interface UserFields {
 	email: string
 	firstName: string
 	lastName: string
-	isActive: boolean
 	password: string
 }
 
