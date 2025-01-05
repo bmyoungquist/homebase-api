@@ -1,14 +1,19 @@
 import { body, param, ValidationChain } from 'express-validator'
 import { UserFields } from './interfaces'
+import { validationHandler } from '@/src/middleware/validation-handler'
 
 type UserValidationMaps = {
 	[key in keyof UserFields]: ValidationChain
 }
 
-const validationMaps: UserValidationMaps & {
+const NewUserValidationMaps: UserValidationMaps & {
 	strongPassword: ValidationChain
 } = {
-	id: param('id').notEmpty().isNumeric(),
+	id: param('id')
+		.notEmpty()
+		.withMessage('Id is required')
+		.isNumeric()
+		.withMessage('Id must be a number'),
 	email: body('email')
 		.notEmpty()
 		.withMessage('email is required')
@@ -28,10 +33,14 @@ const validationMaps: UserValidationMaps & {
 		.withMessage('isActive is required')
 		.isBoolean()
 		.withMessage('isActive must be a boolean'),
-	password: body('password').notEmpty().withMessage('password is required'),
+	password: body('password')
+		.notEmpty()
+		.withMessage('Password is required')
+		.isString()
+		.withMessage('Password must be a string'),
 	strongPassword: body('password')
 		.notEmpty()
-		.withMessage('password is required')
+		.withMessage('Password is required')
 		.isStrongPassword({
 			minLength: 8,
 			minLowercase: 1,
@@ -39,7 +48,51 @@ const validationMaps: UserValidationMaps & {
 			minNumbers: 1,
 			minSymbols: 1,
 		})
-		.withMessage('password is not strong enough'),
+		.withMessage('Password is not strong enough'),
 }
 
-export { validationMaps }
+const PatchUserValidationMap = [
+	param('id')
+		.notEmpty()
+		.withMessage('Id is required')
+		.isNumeric()
+		.withMessage('Id must be a number'),
+	body('email')
+		.optional()
+		.isEmail()
+		.withMessage('Please enter a valid email')
+		.normalizeEmail(),
+	body('firstName')
+		.optional()
+		.isString()
+		.withMessage('First Name must be a string'),
+	body('lastName')
+		.optional()
+		.isString()
+		.withMessage('Last Name must be a string'),
+	validationHandler,
+]
+
+const UpdatePasswordValidationMap = {
+	password: body('password')
+		.notEmpty()
+		.withMessage('Password is required')
+		.isString()
+		.withMessage('Password must be a string'),
+	newPassword: body('newPassword')
+		.notEmpty()
+		.withMessage('New password is required')
+		.isString()
+		.withMessage('New password must be a string'),
+	newPasswordConfirmation: body('newPasswordConfirmation')
+		.notEmpty()
+		.withMessage('New password confirmation is required')
+		.isString()
+		.withMessage('New password confirmation must be a string'),
+}
+
+export {
+	NewUserValidationMaps,
+	PatchUserValidationMap,
+	UpdatePasswordValidationMap,
+}

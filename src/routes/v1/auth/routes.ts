@@ -1,6 +1,6 @@
 import { validationHandler } from '@/src/middleware/validation-handler'
 import { Request, Response, Router } from 'express'
-import { validationMaps as userValidationMaps } from '../users/validationMap'
+import { NewUserValidationMaps } from '../users/validationMap'
 import { prisma } from '@/src/prisma-client'
 import { UserFields } from '../users/interfaces'
 import jwt from 'jsonwebtoken'
@@ -10,7 +10,11 @@ const router = Router()
 
 router.post(
 	'/login',
-	[userValidationMaps.email, userValidationMaps.password, validationHandler],
+	[
+		NewUserValidationMaps.email,
+		NewUserValidationMaps.password,
+		validationHandler,
+	],
 	async (req: Request, res: Response) => {
 		const { email, password } = req.body as UserFields
 		const user = await prisma.user.findUnique({
@@ -34,7 +38,9 @@ router.post(
 		const payload = {
 			id: user.id,
 			email: user.email,
-			name: `${user.firstName} ${user.lastName}`.trim()
+			firstName: user.firstName,
+			lastName: user.lastName,
+			organizations: [],
 		}
 
 		const token = jwt.sign(payload, process.env.WEB_TOKEN_SECRET!, {

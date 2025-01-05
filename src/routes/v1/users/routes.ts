@@ -1,22 +1,21 @@
 import { Router, Request, Response } from 'express'
 import { prisma } from '@/prisma-client'
 import { UserFields } from './interfaces'
-import { validationResult } from 'express-validator'
-import { validationMaps } from './validationMap'
+import { NewUserValidationMaps, PatchUserValidationMap } from './validationMap'
 import bcrypt from 'bcryptjs'
 import { validationHandler } from '@/src/middleware/validation-handler'
-import passport, { session } from 'passport'
+import passport from 'passport'
 
 const router = Router()
 
 router.post(
 	'/',
 	[
-		validationMaps.email,
-		validationMaps.firstName,
-		validationMaps.lastName,
-		validationMaps.isActive,
-		validationMaps.strongPassword,
+		NewUserValidationMaps.email,
+		NewUserValidationMaps.firstName,
+		NewUserValidationMaps.lastName,
+		NewUserValidationMaps.isActive,
+		NewUserValidationMaps.strongPassword,
 		validationHandler,
 	],
 	async (req: Request, res: Response) => {
@@ -55,11 +54,11 @@ router.put(
 	'/:id',
 	[
 		passport.authenticate('jwt', { session: false }),
-		validationMaps.id,
-		validationMaps.email,
-		validationMaps.firstName,
-		validationMaps.lastName,
-		validationMaps.isActive,
+		NewUserValidationMaps.id,
+		NewUserValidationMaps.email,
+		NewUserValidationMaps.firstName,
+		NewUserValidationMaps.lastName,
+		NewUserValidationMaps.isActive,
 		validationHandler,
 	],
 	async (req: Request, res: Response) => {
@@ -78,7 +77,6 @@ router.put(
 				email: email,
 				firstName: firstName,
 				lastName: lastName ?? null,
-				isActive: isActive,
 			},
 		})
 
@@ -92,9 +90,36 @@ router.put(
 	}
 )
 
+router.patch(
+	':/id',
+	PatchUserValidationMap,
+	async (req: Request, res: Response) => {
+		const id = parseInt(req.params.id)
+
+		const user = await prisma.user.findUniqueOrThrow({
+			where: { id },
+			select: {
+				email: true,
+				firstName: true,
+				lastName: true,
+			},
+		})
+
+		const { email, firstName, lastName } = req.body
+
+		user.email = email ?? user.email
+		user.firstName = firstName ?? user.firstName
+		user.lastName = lastName ?? user.lastName
+
+		const result = await prisma.user.update({ where: { id }, data: user })
+
+		res.status(200).json(result)
+	}
+)
+
 router.delete(
 	'/:id',
-	[validationMaps.id, validationHandler],
+	[NewUserValidationMaps.id, validationHandler],
 	async (req: Request, res: Response) => {
 		const id = parseInt(req.params.id)
 
@@ -111,7 +136,6 @@ router.get('/', async (req: Request, res: Response) => {
 			email: true,
 			firstName: true,
 			lastName: true,
-			isActive: true,
 		},
 	})
 	const status = users.length > 0 ? 200 : 204
