@@ -85,7 +85,7 @@ router.put(
 )
 
 router.patch(
-	':/id',
+	'/:id',
 	PatchUserValidationMap,
 	async (req: Request, res: Response) => {
 		const id = parseInt(req.params.id)
