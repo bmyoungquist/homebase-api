@@ -68,23 +68,31 @@ const PatchUserValidationMap = [
 	validationHandler,
 ]
 
-const UpdatePasswordValidationMap = {
-	password: body('password')
+const UpdatePasswordValidationMap = [
+	param('id')
+		.notEmpty()
+		.withMessage('Id is required')
+		.isNumeric()
+		.withMessage('Id must be a number'),
+	body('password')
 		.notEmpty()
 		.withMessage('Password is required')
 		.isString()
 		.withMessage('Password must be a string'),
-	newPassword: body('newPassword')
+	body('newPassword')
 		.notEmpty()
 		.withMessage('New password is required')
 		.isString()
 		.withMessage('New password must be a string'),
-	newPasswordConfirmation: body('newPasswordConfirmation')
+	body('newPasswordConfirmation')
 		.notEmpty()
 		.withMessage('New password confirmation is required')
 		.isString()
 		.withMessage('New password confirmation must be a string'),
-}
+	body()
+		.custom((body) => body.newPassword === body.newPasswordConfirmation)
+		.withMessage('New password and new password confirmation must match'),
+]
 
 export {
 	NewUserValidationMaps,

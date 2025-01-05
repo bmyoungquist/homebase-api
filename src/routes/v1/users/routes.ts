@@ -1,10 +1,14 @@
 import { Router, Request, Response } from 'express'
 import { prisma } from '@/prisma-client'
 import { UserFields } from './interfaces'
-import { NewUserValidationMaps, PatchUserValidationMap } from './validationMap'
-import bcrypt from 'bcryptjs'
+import {
+	NewUserValidationMaps,
+	PatchUserValidationMap,
+	UpdatePasswordValidationMap,
+} from './validationMap'
 import { validationHandler } from '@/src/middleware/validation-handler'
 import passport from 'passport'
+import { getHashedPassword } from '@/src/util/password'
 
 const router = Router()
 
@@ -20,8 +24,7 @@ router.post(
 	async (req: Request, res: Response) => {
 		const { email, firstName, lastName, password } = req.body as UserFields
 
-		const salt = await bcrypt.genSalt(10)
-		const hashedPassword = await bcrypt.hash(password, salt)
+		const hashedPassword = await getHashedPassword(password)
 
 		const newUser = await prisma.user.create({
 			data: {
@@ -108,6 +111,34 @@ router.patch(
 		const result = await prisma.user.update({ where: { id }, data: user })
 
 		res.status(200).json(result)
+	}
+)
+
+router.patch(
+	'/:id/password',
+	UpdatePasswordValidationMap,
+	async (req: Request, res: Response) => {
+		const id = parseInt(req.params.id)
+		const { password, newPassword, newPasswordConfirmation } = req.body
+		const user = await prisma.user.findUniqueOrThrow({
+			where: { id },
+			select: { password: true },
+		})
+		const hashedPassword = await getHashedPassword(password)
+
+		if (hashedPassword !== user.password) {
+			res.status(400).json({ message: 'Incorrect Password' })
+			return
+		}
+
+		const newPasswordHash = await getHashedPassword(newPassword)
+
+		await prisma.user.update({
+			where: { id },
+			data: { password: newPasswordHash },
+		})
+
+		res.sendStatus(204)
 	}
 )
 
