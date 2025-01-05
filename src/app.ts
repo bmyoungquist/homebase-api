@@ -5,6 +5,8 @@ import helmet from 'helmet'
 import v1 from './routes/v1'
 import { errorHandler } from './middleware/error-handler'
 import cookieParser from 'cookie-parser'
+import passport from 'passport'
+import '@/middleware/passport-jwt-strategy'
 
 dotevnv.config()
 
@@ -22,6 +24,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 app.use(helmet())
 app.use(cookieParser())
+// app.use(passport.initialize());
 
 // routes
 app.use('/v1', v1)

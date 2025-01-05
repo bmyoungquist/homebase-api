@@ -34,6 +34,7 @@ router.post(
 		const payload = {
 			id: user.id,
 			email: user.email,
+			name: `${user.firstName} ${user.lastName}`.trim()
 		}
 
 		const token = jwt.sign(payload, process.env.WEB_TOKEN_SECRET!, {

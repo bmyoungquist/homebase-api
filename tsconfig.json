@@ -2,14 +2,18 @@
 	"compilerOptions": {
 		"forceConsistentCasingInFileNames": true,
 		"module": "commonjs",
+		"moduleResolution": "node",
 		"esModuleInterop": true,
 		"outDir": "./build",
 		"rootDir": "./src",
 		"target": "es6",
 		"skipLibCheck": true,
 		"strict": true,
+		"sourceMap": false,
+		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./*", "./src/*"]
 		}
-	}
+	},
+	"exclude": ["node_modules", ".vscode"]
 }

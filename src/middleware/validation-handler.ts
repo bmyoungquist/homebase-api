@@ -6,7 +6,6 @@ export function validationHandler(
 	res: Response,
 	next: NextFunction
 ) {
-	console.log('hello from validationErrors')
 	const validationErrors = validationResult(req)
 	if (!validationErrors.isEmpty()) {
 		res.status(400).json(validationErrors)

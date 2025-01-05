@@ -1,7 +1,5 @@
 import { body, param, ValidationChain } from 'express-validator'
 import { UserFields } from './interfaces'
-import { prisma } from '@/src/prisma-client'
-import { validationHandler } from '@/src/middleware/validation-handler'
 
 type UserValidationMaps = {
 	[key in keyof UserFields]: ValidationChain

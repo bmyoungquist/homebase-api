@@ -5,6 +5,7 @@ import { validationResult } from 'express-validator'
 import { validationMaps } from './validationMap'
 import bcrypt from 'bcryptjs'
 import { validationHandler } from '@/src/middleware/validation-handler'
+import passport, { session } from 'passport'
 
 const router = Router()
 
@@ -53,6 +54,7 @@ router.post(
 router.put(
 	'/:id',
 	[
+		passport.authenticate('jwt', { session: false }),
 		validationMaps.id,
 		validationMaps.email,
 		validationMaps.firstName,
