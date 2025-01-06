@@ -144,9 +144,24 @@ router.patch(
 
 router.delete(
 	'/:id',
-	[NewUserValidationMaps.id, validationHandler],
+	[
+		NewUserValidationMaps.id,
+		NewUserValidationMaps.email,
+		NewUserValidationMaps.password,
+		validationHandler,
+	],
 	async (req: Request, res: Response) => {
 		const id = parseInt(req.params.id)
+		const { email, password } = req.body
+
+		const user = await prisma.user.findUniqueOrThrow({
+			where: { id, email },
+		})
+
+		if (user.password !== (await getHashedPassword(password))) {
+			res.status(400).json('Incorrect Password')
+			return
+		}
 
 		const result = await prisma.user.delete({ where: { id: id } })
 
