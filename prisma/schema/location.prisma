@@ -3,8 +3,9 @@ model Location {
   parentId    Int?    @unique
   name        String
   description String?
-  isActive    Boolean
+  placeId Int?
 
+  place Place? @relation(fields: [placeId], references: [id])
   parentLocation Location? @relation("LocationRelationship", fields: [parentId], references: [id])
   childLocation  Location? @relation("LocationRelationship")
 

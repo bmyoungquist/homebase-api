@@ -13,9 +13,13 @@ export function errorHandler(
 		return
 	}
 
+	const message = getErrorMessage(error)
+
+	console.log(message)
+
 	res.status(500).json({
 		error: {
-			message: getErrorMessage(error)
+			message: message
 		}
 	})
 }

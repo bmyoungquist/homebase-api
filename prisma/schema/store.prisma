@@ -5,7 +5,7 @@ model Store {
   isActive    Boolean
   addressId   Int
 
-  address Address @relation(fields: [addressId], references: [id])
+  // address Address @relation(fields: [addressId], references: [id])
 
   // metadata
   createdAt DateTime @default(dbgenerated("NOW()"))

@@ -1,15 +1,18 @@
-model Address {
+model Place {
   id        Int     @id @default(autoincrement())
   name      String
-  streetOne String
+  description String?
+  streetOne String?
   streetTwo String?
   unit      String?
-  zipCode   String
-  city      String
-  state     String
+  zipCode   String?
+  city      String?
+  state     String?
   country   String?
+  coordX Int?
+  coordY Int?
 
   // metadata
   createdAt DateTime @default(dbgenerated("NOW()"))
-  Store     Store[]
+  Location     Location[]
 }
